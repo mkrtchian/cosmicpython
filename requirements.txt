@@ -3,3 +3,4 @@ sqlalchemy
 flask
 psycopg2-binary
 requests
+pytest-watch
