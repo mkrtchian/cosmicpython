@@ -26,13 +26,6 @@ class FakeSession:
         self.committed = True
 
 
-def test_add_batch():
-    repo, session = FakeRepository([]), FakeSession()
-    services.add_batch("b1", "CRUNCHY-ARMCHAIR", 100, None, repo, session)
-    assert repo.get("b1") is not None
-    assert session.committed
-
-
 def test_returns_allocation():
     line = model.OrderLine("o1", "COMPLICATED-LAMP", 10)
     batch = model.Batch("b1", "COMPLICATED-LAMP", 100, eta=None)
@@ -64,3 +57,16 @@ def test_commits():
 today = date.today()
 tomorrow = today + timedelta(days=1)
 later = tomorrow + timedelta(days=10)
+
+
+def test_prefers_current_stock_batches_to_shipments():
+    in_stock_batch = model.Batch("in-stock-batch", "RETRO-CLOCK", 100, eta=None)
+    shipment_batch = model.Batch("shipment-batch", "RETRO-CLOCK", 100, eta=tomorrow)
+    line = model.OrderLine("oref", "RETRO-CLOCK", 10)
+    repo = FakeRepository([in_stock_batch, shipment_batch])
+    session = FakeSession()
+
+    services.allocate(line, repo, session)
+
+    assert in_stock_batch.available_quantity == 90
+    assert shipment_batch.available_quantity == 100
