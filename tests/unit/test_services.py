@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 import pytest
 from adapters import repository
 from domain import model
@@ -58,3 +59,8 @@ def test_commits():
 
     services.allocate(line, repo, session)
     assert session.committed is True
+
+
+today = date.today()
+tomorrow = today + timedelta(days=1)
+later = tomorrow + timedelta(days=10)
