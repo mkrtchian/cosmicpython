@@ -16,18 +16,18 @@ def is_valid_sku(sku, batches):
 
 
 def add_batch(
-    ref: str, sku: str, qty: int, eta: Optional[date],
-    repo: AbstractRepository, session,
+    ref: str,
+    sku: str,
+    qty: int,
+    eta: Optional[date],
+    repo: AbstractRepository,
+    session,
 ) -> None:
     repo.add(model.Batch(ref, sku, qty, eta))
     session.commit()
 
 
-def allocate(
-    orderid: str, sku: str, qty: int,
-    repo: AbstractRepository, session
-) -> str:
-    line = OrderLine(orderid, sku, qty)
+def allocate(line: OrderLine, repo: AbstractRepository, session) -> str:
     batches = repo.list()
     if not is_valid_sku(line.sku, batches):
         raise InvalidSku(f"Invalid sku {line.sku}")

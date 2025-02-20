@@ -17,13 +17,13 @@ app = Flask(__name__)
 def add_batch():
     session = get_session()
     repo = repository.SqlAlchemyRepository(session)
-    eta = request.json["eta"]
+    eta = request.json["eta"]  # type: ignore
     if eta is not None:
         eta = datetime.fromisoformat(eta).date()
     services.add_batch(
-        request.json["ref"],
-        request.json["sku"],
-        request.json["qty"],
+        request.json["ref"],  # type: ignore
+        request.json["sku"],  # type: ignore
+        request.json["qty"],  # type: ignore
         eta,
         repo,
         session,
@@ -35,14 +35,14 @@ def add_batch():
 def allocate_endpoint():
     session = get_session()
     repo = repository.SqlAlchemyRepository(session)
+    line = model.OrderLine(
+        request.json["orderid"],  # type: ignore
+        request.json["sku"],  # type: ignore
+        request.json["qty"],  # type: ignore
+    )
+
     try:
-        batchref = services.allocate(
-            request.json["orderid"],
-            request.json["sku"],
-            request.json["qty"],
-            repo,
-            session,
-        )
+        batchref = services.allocate(line, repo, session)
     except (model.OutOfStock, services.InvalidSku) as e:
         return {"message": str(e)}, 400
 
