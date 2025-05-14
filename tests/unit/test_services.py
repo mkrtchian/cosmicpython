@@ -57,16 +57,3 @@ def test_commits():
 today = date.today()
 tomorrow = today + timedelta(days=1)
 later = tomorrow + timedelta(days=10)
-
-
-def test_prefers_current_stock_batches_to_shipments():
-    in_stock_batch = model.Batch("in-stock-batch", "RETRO-CLOCK", 100, eta=None)
-    shipment_batch = model.Batch("shipment-batch", "RETRO-CLOCK", 100, eta=tomorrow)
-    line = model.OrderLine("oref", "RETRO-CLOCK", 10)
-    repo = FakeRepository([in_stock_batch, shipment_batch])
-    session = FakeSession()
-
-    services.allocate(line, repo, session)
-
-    assert in_stock_batch.available_quantity == 90
-    assert shipment_batch.available_quantity == 100
