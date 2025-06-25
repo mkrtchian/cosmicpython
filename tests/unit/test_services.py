@@ -3,7 +3,7 @@ from datetime import date, timedelta
 import pytest
 from allocation.adapters import repository
 from allocation.domain import model
-from allocation.service_layer import services
+from allocation.service_layer import services, unit_of_work
 
 
 class FakeRepository(repository.AbstractRepository):
@@ -28,32 +28,7 @@ class FakeRepository(repository.AbstractRepository):
         )
 
 
-class FakeSession:
-    committed = False
-
-    def commit(self):
-        self.committed = True
-
-
-class AbstractUnitOfWork(abc.ABC):
-    batches: repository.AbstractRepository
-
-    def __enter__(self) -> "AbstractUnitOfWork":
-        return self
-
-    def __exit__(self, *args):
-        self.rollback
-
-    @abc.abstractmethod
-    def commit(self):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def rollback(self):
-        raise NotImplementedError
-
-
-class FakeUnitOfWork(AbstractUnitOfWork):
+class FakeUnitOfWork(unit_of_work.AbstractUnitOfWork):
     def __init__(self, batches, *args):
         self.batches = FakeRepository(batches)
         self.committed = False

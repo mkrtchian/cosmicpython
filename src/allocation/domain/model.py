@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional, List
+from typing import Optional, List, Set
 
 
 class OutOfStock(Exception):
