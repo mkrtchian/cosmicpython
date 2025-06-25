@@ -19,14 +19,6 @@ class FakeRepository(repository.AbstractRepository):
     def list(self):
         return list(self._batches)
 
-    @staticmethod
-    def for_batch(ref, sku, qty, eta=None):
-        return FakeRepository(
-            [
-                model.Batch(ref, sku, qty, eta),
-            ]
-        )
-
 
 class FakeUnitOfWork(unit_of_work.AbstractUnitOfWork):
     def __init__(self, batches, *args):
