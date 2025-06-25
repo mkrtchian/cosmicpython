@@ -9,7 +9,6 @@ from allocation.adapters import orm
 from allocation.service_layer import services, unit_of_work
 
 orm.start_mappers()
-get_session = sessionmaker(bind=create_engine(config.get_postgres_uri()))
 app = Flask(__name__)
 
 
